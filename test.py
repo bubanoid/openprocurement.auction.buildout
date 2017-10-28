@@ -55,7 +55,10 @@ def update_auctionPeriod(path, auction_type):
         for lot in data['data']['lots']:
             lot['auctionPeriod']['startDate'] = new_start_time
 
-    with tempfile.NamedTemporaryFile(delete=False) as auction_file:
+    # with tempfile.NamedTemporaryFile(delete=False) as auction_file:
+    #     json.dump(data, auction_file)
+    #     auction_file.seek(0)
+    with open('/tmp/tmp_auction', 'w') as auction_file:
         json.dump(data, auction_file)
         auction_file.seek(0)
     yield auction_file.name
@@ -72,12 +75,15 @@ def planning(tender_file_path, worker, auction_id):
 
 
 def run(tender_file_path, worker, auction_id):
-    with update_auctionPeriod(tender_file_path,
-                              auction_type='simple') as auction_file:
-        check_output('{0}/bin/{1} run {2}'
-                     ' {0}/etc/auction_worker_defaults.yaml --planning_procerude partial_db --auction_info {3}'.format(
-            CWD, worker, auction_id, auction_file).split())
-    os.system('sleep 3')
+    with update_auctionPeriod(tender_file_path, auction_type='simple') as auction_file:
+        x = 'run {2}' \
+            ' {0}/etc/auction_worker_defaults.yaml --planning_procerude partial_db --auction_info {3}'.format(CWD, worker, auction_id, auction_file)
+        # check_output('{0}/bin/{1} run {2}'
+        #              ' {0}/etc/auction_worker_defaults.yaml --planning_procerude partial_db --auction_info {3}'.format(
+        #     CWD, worker, auction_id, auction_file).split())
+
+        print(x)
+    # os.system('sleep 3')
 
 
 if __name__ == '__main__':
